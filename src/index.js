@@ -8,7 +8,7 @@ window.Emarsys.Magento2.track = function(data) {
     var ScarabQueue = window.ScarabQueue || [];
     var firstOnData = true;
 
-    function onData() {
+    const onData = function() {
       ScarabQueue.push(['setCustomerId', data.customer.entity_id]);
       if (firstOnData) {
         if (data.product) {
@@ -22,11 +22,11 @@ window.Emarsys.Magento2.track = function(data) {
         }
       }
       if (data.cart) {
-        ScarabQueue.push(['cart', cart]);
+        ScarabQueue.push(['cart', data.cart.items]);
       }
       ScarabQueue.push(['go']);
       firstOnData = false;
-    }
+    };
 
     customerData.get('customer').subscribe(function(customer) {
       console.log('customer', customer);
@@ -39,6 +39,5 @@ window.Emarsys.Magento2.track = function(data) {
       data.cart = cart;
       if (data.customer && data.cart) onData();
     });
-
   });
 };
