@@ -14,7 +14,8 @@ const setupSnippet = customerData => {
   global.window = {
     require: (arr, callback) => {
       callback(customerData);
-    }
+    },
+    ScarabQueue: []
   };
   requireUncached('./');
 };
@@ -26,9 +27,9 @@ describe('Magento2 Extension', function() {
     expect(global.window.Emarsys.Magento2.track).to.be.a('function');
   });
 
-  it('should work multiple times', function() {
-    setupSnippet({ emarsys: 'shopify' });
+  it('should push searchTerm if present in customerdata into ScarabQueue', function() {
+    setupSnippet({ searchTerm: 'shopify is better than magento' });
     global.window.Emarsys.Magento2.track();
-    expect(global.window.Emarsys.Magento2.track).to.be.a('function');
+    expect(global.window.ScarabQueue).to.eql([['searchTerm', 'shopify is better than magento'], ['go']]);
   });
 });
