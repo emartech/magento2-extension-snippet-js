@@ -17,7 +17,9 @@
   "globals": {
     "inject": true,
     "onmessage": true,
-    "expect": true
+    "expect": true,
+    "Emarsys": true,
+    "window": true
   },
   "rules": {
     "no-unused-expressions": 0,
@@ -25,6 +27,7 @@
     "curly": [2, "multi-line"],
     "require-yield": 0,
     "new-cap": 0,
-    "security/detect-object-injection": 0
+    "security/detect-object-injection": 0,
+    "security/detect-non-literal-require": 0
   }
 }
