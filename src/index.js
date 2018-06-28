@@ -9,7 +9,7 @@ window.Emarsys.Magento2.track = function(data) {
     var firstOnData = true;
 
     const onData = function() {
-      ScarabQueue.push(['setCustomerId', data.customer.entity_id]);
+      ScarabQueue.push(['setCustomerId', data.customer.id]);
       if (firstOnData) {
         if (data.product) {
           ScarabQueue.push(['view', 'g/' + data.product.sku]);
