@@ -22,7 +22,13 @@ window.Emarsys.Magento2.track = function(data) {
         }
       }
       if (data.cart) {
-        ScarabQueue.push(['cart', data.cart.items]);
+        ScarabQueue.push(['cart', data.cart.items.map(product => {
+          return {
+            item: product.product_sku,
+            price: product.product_price_value,
+            quantity: product.qty
+          }
+        })]);
       }
       ScarabQueue.push(['go']);
       firstOnData = false;
