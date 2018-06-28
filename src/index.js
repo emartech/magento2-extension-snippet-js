@@ -6,16 +6,39 @@ window.Emarsys.Magento2.track = function(data) {
   console.log('data', data);
   window.require(['Magento_Customer/js/customer-data'], function(customerData) {
     var ScarabQueue = window.ScarabQueue || [];
+    var firstOnData = true;
+
+    function onData() {
+      ScarabQueue.push(['setCustomerId', data.customer.entity_id]);
+      if (firstOnData) {
+        if (data.product) {
+          ScarabQueue.push(['view', 'g/' + data.product.sku]);
+        }
+        if (data.category) {
+          ScarabQueue.push(['category', data.category.names.join(' > ')]);
+        }
+        if (data.search) {
+          ScarabQueue.push(['searchTerm', data.search.term]);
+        }
+      }
+      if (data.cart) {
+        ScarabQueue.push(['cart', cart]);
+      }
+      ScarabQueue.push(['go']);
+      firstOnData = false;
+    }
 
     customerData.get('customer').subscribe(function(customer) {
       console.log('customer', customer);
       data.customer = customer;
+      if (data.customer && data.cart) onData();
     });
 
-    if (data.searchTerm) {
-      ScarabQueue.push(['searchTerm', data.searchTerm]);
-    }
+    customerData.get('cart').subscribe(function(cart) {
+      console.log('cart', cart);
+      data.cart = cart;
+      if (data.customer && data.cart) onData();
+    });
 
-    ScarabQueue.push(['go']);
   });
 };
