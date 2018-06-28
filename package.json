@@ -4,6 +4,7 @@
   "main": "src/index.js",
   "scripts": {
     "build": "webpack --mode production",
+    "test": "mocha --reporter spec 'src/**/*.spec.js'",
     "deploy-staging": "REDIRECTOR_API_SECRET=$REDIRECTOR_API_SECRET_STAGING client-deploy-staging",
     "deploy-production": "REDIRECTOR_API_SECRET=$REDIRECTOR_API_SECRET_PRODUCTION client-deploy-production",
     "merge-production": "client-merge"
