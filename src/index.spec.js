@@ -64,6 +64,15 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.eql([]);
   });
 
+  it('should not insert into scarabqueue if cart and customer is triggered but without a customer id', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.track({});
+    callbacks.cart(testCart);
+    callbacks.customer({ no_id: 'I dont have an ID sorry :(' });
+
+    expect(global.window.ScarabQueue).to.eql([]);
+  });
+
   it('should push customer and cart related data into scarabqueue after both triggered', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});

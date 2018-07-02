@@ -8,6 +8,8 @@ window.Emarsys.Magento2.track = function(data) {
     var firstOnData = true;
 
     const onData = function() {
+      if (!data.cart || !(data.customer && data.customer.id)) return;
+
       ScarabQueue.push(['setCustomerId', data.customer.id]);
       if (firstOnData) {
         if (data.product) {
@@ -39,13 +41,13 @@ window.Emarsys.Magento2.track = function(data) {
     customerData.get('customer').subscribe(function(customer) {
       console.log('customer', customer);
       data.customer = customer;
-      if (data.customer && data.cart) onData();
+      onData();
     });
 
     customerData.get('cart').subscribe(function(cart) {
       console.log('cart', cart);
       data.cart = cart;
-      if (data.customer && data.cart) onData();
+      onData();
     });
   });
 };
