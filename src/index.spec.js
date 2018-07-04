@@ -135,6 +135,26 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.deep.include(['category', 'elso > masodik']);
   });
 
+  it('should push purchase event data if order object is present', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.orderData = {
+      orderId: '1',
+      items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+    };
+
+    global.window.Emarsys.Magento2.track({});
+    callbacks.cart(testCart);
+    callbacks.customer(testCustomer);
+
+    expect(global.window.ScarabQueue).to.deep.include([
+      'purchase',
+      {
+        orderId: '1',
+        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+      }
+    ]);
+  });
+
   it('should push searchTerm event if search.term is present', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ search: { term: 'shopify if better than magento' } });

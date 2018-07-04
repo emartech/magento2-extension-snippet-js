@@ -3,6 +3,7 @@
 window.Emarsys = window.Emarsys || {};
 window.Emarsys.Magento2 = window.Emarsys.Magento2 || {};
 window.Emarsys.Magento2.track = function(data) {
+  data.order = window.Emarsys.Magento2.orderData;
   window.require(['Magento_Customer/js/customer-data'], function(customerData) {
     var ScarabQueue = window.ScarabQueue || [];
     var firstOnData = true;
@@ -20,6 +21,9 @@ window.Emarsys.Magento2.track = function(data) {
         }
         if (data.search) {
           ScarabQueue.push(['searchTerm', data.search.term]);
+        }
+        if (data.order) {
+          ScarabQueue.push(['purchase', data.order]);
         }
       }
       if (data.cart) {
