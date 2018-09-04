@@ -9,9 +9,11 @@ window.Emarsys.Magento2.track = function(data) {
     var firstOnData = true;
 
     const onData = function() {
-      if (!data.cart || !(data.customer && data.customer.id)) return;
+      if (!data.cart || !data.customer) return;
 
-      ScarabQueue.push(['setCustomerId', data.customer.id]);
+      if (data.customer.id) {
+        ScarabQueue.push(['setCustomerId', data.customer.id]);
+      }
       if (firstOnData) {
         if (data.product) {
           ScarabQueue.push(['view', 'g/' + data.product.sku]);
