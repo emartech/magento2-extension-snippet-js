@@ -46,13 +46,13 @@ window.Emarsys.Magento2.track = function(data) {
     };
 
     customerData.get('customer').subscribe(function(customer) {
-      // console.log('customer', customer);
+      console.log('customer', customer);
       data.customer = customer;
       onData('customer');
     });
 
     customerData.get('cart').subscribe(function(cart) {
-      // console.log('cart', cart);
+      console.log('cart', cart);
       data.cart = cart;
       onData('cart');
     });
