@@ -50,21 +50,34 @@ describe('Magento2 Extension', function() {
     expect(global.window.Emarsys.Magento2.track).to.be.a('function');
   });
 
-  it('should not insert anything into scarabqueue if only customer observable triggered', function() {
+  it('should insert data into scarabqueue if only customer observable triggered', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
-    expect(global.window.ScarabQueue).to.eql([]);
+    expect(global.window.ScarabQueue).to.eql([['setCustomerId', 1], ['go']]);
   });
 
-  it('should not insert anything into scarabqueue if only cart observable triggered', function() {
+  it('should insert data into scarabqueue if only cart observable triggered', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
-    expect(global.window.ScarabQueue).to.eql([]);
+    expect(global.window.ScarabQueue).to.eql([
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 1234,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go']
+    ]);
   });
 
-  it('should insert into scarabqueue if cart and customer is triggered but without a customer id', function() {
+  // eslint-disable-next-line max-len
+  it('should insert only cart data into scarabqueue if cart and customer is triggered but without a customer id', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
@@ -85,13 +98,15 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should push customer and cart related data into scarabqueue after both triggered', function() {
+  it('should push customer and cart related data into scarabqueue if both triggered', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
     callbacks.cart(testCart);
 
     expect(global.window.ScarabQueue).to.eql([
+      ['setCustomerId', 1],
+      ['go'],
       ['setCustomerId', 1],
       [
         'cart',
@@ -114,6 +129,17 @@ describe('Magento2 Extension', function() {
     callbacks.customer(testCustomer);
 
     expect(global.window.ScarabQueue).to.eql([
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 1234,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go'],
       ['setCustomerId', 1],
       [
         'cart',
@@ -185,8 +211,19 @@ describe('Magento2 Extension', function() {
     callbacks.cart(testCart);
 
     expect(global.window.ScarabQueue).to.eql([
-      ['setCustomerId', 1],
       ['searchTerm', 'shopify if better than magento'],
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 1234,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go'],
+      ['setCustomerId', 1],
       [
         'cart',
         [

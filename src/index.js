@@ -5,13 +5,14 @@ window.Emarsys.Magento2 = window.Emarsys.Magento2 || {};
 window.Emarsys.Magento2.track = function(data) {
   data.order = window.Emarsys.Magento2.orderData;
   window.require(['Magento_Customer/js/customer-data'], function(customerData) {
-    var ScarabQueue = window.ScarabQueue || [];
-    var firstOnData = true;
+    let ScarabQueue = window.ScarabQueue || [];
+    let firstOnData = true;
 
-    const onData = function() {
-      if (!data.cart || !data.customer) return;
-
-      if (data.customer.id) {
+    const onData = function(trigger) {
+      if (trigger === 'customer' && !data.customer.id) {
+        return;
+      }
+      if (data.customer && data.customer.id) {
         ScarabQueue.push(['setCustomerId', data.customer.id]);
       }
       if (firstOnData) {
@@ -45,15 +46,15 @@ window.Emarsys.Magento2.track = function(data) {
     };
 
     customerData.get('customer').subscribe(function(customer) {
-      console.log('customer', customer);
+      // console.log('customer', customer);
       data.customer = customer;
-      onData();
+      onData('customer');
     });
 
     customerData.get('cart').subscribe(function(cart) {
-      console.log('cart', cart);
+      // console.log('cart', cart);
       data.cart = cart;
-      onData();
+      onData('cart');
     });
   });
 };
