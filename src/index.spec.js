@@ -1,6 +1,7 @@
 'use strict';
 
 const chai = require('chai');
+const sinon = require('sinon');
 const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 chai.use(sinonChai);
@@ -43,10 +44,21 @@ const testCart = {
 const testCustomer = { id: 1, name: 'Marton Papp' };
 
 describe('Magento2 Extension', function() {
+  let clock;
+
+  beforeEach(function() {
+    clock = sinon.useFakeTimers();
+  });
+
+  afterEach(function() {
+    clock.restore();
+  });
+
   it('should register a track function', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ a: 'b' });
     callbacks.customer(testCustomer);
+    clock.tick(0);
     expect(global.window.Emarsys.Magento2.track).to.be.a('function');
   });
 
@@ -54,6 +66,7 @@ describe('Magento2 Extension', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([['setCustomerId', 1], ['go']]);
   });
 
@@ -61,6 +74,7 @@ describe('Magento2 Extension', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
       [
         'cart',
@@ -82,7 +96,7 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
     callbacks.customer({ no_id: 'I dont have an ID sorry :(' });
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
       [
         'cart',
@@ -103,10 +117,8 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
     callbacks.cart(testCart);
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
-      ['setCustomerId', 1],
-      ['go'],
       ['setCustomerId', 1],
       [
         'cart',
@@ -127,19 +139,8 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
     callbacks.customer(testCustomer);
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
-      [
-        'cart',
-        [
-          {
-            item: 'TEST-SKU',
-            price: 1234,
-            quantity: 42
-          }
-        ]
-      ],
-      ['go'],
       ['setCustomerId', 1],
       [
         'cart',
@@ -160,7 +161,7 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({ product: { sku: 'VIEW-SKU' } });
     callbacks.cart(testCart);
     callbacks.customer(testCustomer);
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.deep.include(['view', 'g/VIEW-SKU']);
   });
 
@@ -169,7 +170,7 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({ category: { names: ['elso', 'masodik'] } });
     callbacks.cart(testCart);
     callbacks.customer(testCustomer);
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.deep.include(['category', 'elso > masodik']);
   });
 
@@ -183,7 +184,7 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
     callbacks.customer(testCustomer);
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.deep.include([
       'purchase',
       {
@@ -198,7 +199,7 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({ search: { term: 'shopify if better than magento' } });
     callbacks.cart(testCart);
     callbacks.customer(testCustomer);
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.deep.include(['searchTerm', 'shopify if better than magento']);
   });
 
@@ -209,33 +210,10 @@ describe('Magento2 Extension', function() {
     callbacks.customer(testCustomer);
 
     callbacks.cart(testCart);
-
+    clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
+      ['setCustomerId', 1],
       ['searchTerm', 'shopify if better than magento'],
-      [
-        'cart',
-        [
-          {
-            item: 'TEST-SKU',
-            price: 1234,
-            quantity: 42
-          }
-        ]
-      ],
-      ['go'],
-      ['setCustomerId', 1],
-      [
-        'cart',
-        [
-          {
-            item: 'TEST-SKU',
-            price: 1234,
-            quantity: 42
-          }
-        ]
-      ],
-      ['go'],
-      ['setCustomerId', 1],
       [
         'cart',
         [

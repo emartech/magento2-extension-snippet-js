@@ -7,11 +7,11 @@ window.Emarsys.Magento2.track = function(data) {
   window.require(['Magento_Customer/js/customer-data'], function(customerData) {
     let ScarabQueue = window.ScarabQueue || [];
     let firstOnData = true;
+    let timeout;
 
-    const onData = function(trigger) {
-      if (trigger === 'customer' && !data.customer.id) {
-        return;
-      }
+    const onData = function() {
+      if (timeout) clearTimeout(timeout);
+
       if (data.customer && data.customer.id) {
         ScarabQueue.push(['setCustomerId', data.customer.id]);
       }
@@ -19,7 +19,7 @@ window.Emarsys.Magento2.track = function(data) {
         if (data.product) {
           ScarabQueue.push(['view', 'g/' + data.product.sku]);
         }
-        if (data.category) {
+        if (!data.product && data.category) {
           ScarabQueue.push(['category', data.category.names.join(' > ')]);
         }
         if (data.search) {
@@ -46,15 +46,13 @@ window.Emarsys.Magento2.track = function(data) {
     };
 
     customerData.get('customer').subscribe(function(customer) {
-      console.log('customer', customer);
       data.customer = customer;
-      onData('customer');
+      if (!timeout) timeout = setTimeout(onData, 0);
     });
 
     customerData.get('cart').subscribe(function(cart) {
-      console.log('cart', cart);
       data.cart = cart;
-      onData('cart');
+      if (!timeout) timeout = setTimeout(onData, 0);
     });
   });
 };
