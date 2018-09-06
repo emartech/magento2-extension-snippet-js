@@ -10,7 +10,10 @@ window.Emarsys.Magento2.track = function(data) {
     let timeout;
 
     const onData = function() {
-      if (timeout) clearTimeout(timeout);
+      if (timeout) {
+        clearTimeout(timeout);
+        timeout = undefined;
+      }
 
       if (data.customer && data.customer.id) {
         ScarabQueue.push(['setCustomerId', data.customer.id]);

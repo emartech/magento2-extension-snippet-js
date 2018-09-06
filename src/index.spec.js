@@ -41,6 +41,21 @@ const testCart = {
   ]
 };
 
+const testCart2 = {
+  items: [
+    {
+      product_sku: 'TEST-SKU',
+      product_price_value: 1234,
+      qty: 42
+    },
+    {
+      product_sku: 'TEST2-SKU',
+      product_price_value: 1235,
+      qty: 43
+    }
+  ]
+};
+
 const testCustomer = { id: 1, name: 'Marton Papp' };
 
 describe('Magento2 Extension', function() {
@@ -221,6 +236,64 @@ describe('Magento2 Extension', function() {
             item: 'TEST-SKU',
             price: 1234,
             quantity: 42
+          }
+        ]
+      ],
+      ['go']
+    ]);
+  });
+
+  it('should push data call go again if cart triggered second time', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.track({ search: { term: 'shopify if better than magento' } });
+    callbacks.cart(testCart);
+    callbacks.customer(testCustomer);
+    clock.tick(0);
+    expect(global.window.ScarabQueue).to.eql([
+      ['setCustomerId', 1],
+      ['searchTerm', 'shopify if better than magento'],
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 1234,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go']
+    ]);
+
+    callbacks.cart(testCart2);
+    clock.tick(0);
+    expect(global.window.ScarabQueue).to.eql([
+      ['setCustomerId', 1],
+      ['searchTerm', 'shopify if better than magento'],
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 1234,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go'],
+      ['setCustomerId', 1],
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 1234,
+            quantity: 42
+          },
+          {
+            item: 'TEST2-SKU',
+            price: 1235,
+            quantity: 43
           }
         ]
       ],
