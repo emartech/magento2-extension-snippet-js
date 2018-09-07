@@ -15,8 +15,8 @@ window.Emarsys.Magento2.track = function(data) {
         timeout = undefined;
       }
 
-      if (data.customer && data.customer.id) {
-        ScarabQueue.push(['setCustomerId', data.customer.id]);
+      if (data.customer && data.customer.email) {
+        ScarabQueue.push(['setEmail', data.customer.email]);
       }
       if (firstOnData) {
         if (data.product) {

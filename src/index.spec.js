@@ -56,7 +56,7 @@ const testCart2 = {
   ]
 };
 
-const testCustomer = { id: 1, name: 'Marton Papp' };
+const testCustomer = { id: 1, email: 'doge@emarsys.com', name: 'Marton Papp' };
 
 describe('Magento2 Extension', function() {
   let clock;
@@ -82,7 +82,7 @@ describe('Magento2 Extension', function() {
     global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
     clock.tick(0);
-    expect(global.window.ScarabQueue).to.eql([['setCustomerId', 1], ['go']]);
+    expect(global.window.ScarabQueue).to.eql([['setEmail', 'doge@emarsys.com'], ['go']]);
   });
 
   it('should insert data into scarabqueue if only cart observable triggered', function() {
@@ -134,7 +134,7 @@ describe('Magento2 Extension', function() {
     callbacks.cart(testCart);
     clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
-      ['setCustomerId', 1],
+      ['setEmail', 'doge@emarsys.com'],
       [
         'cart',
         [
@@ -156,7 +156,7 @@ describe('Magento2 Extension', function() {
     callbacks.customer(testCustomer);
     clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
-      ['setCustomerId', 1],
+      ['setEmail', 'doge@emarsys.com'],
       [
         'cart',
         [
@@ -227,7 +227,7 @@ describe('Magento2 Extension', function() {
     callbacks.cart(testCart);
     clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
-      ['setCustomerId', 1],
+      ['setEmail', 'doge@emarsys.com'],
       ['searchTerm', 'shopify if better than magento'],
       [
         'cart',
@@ -250,7 +250,7 @@ describe('Magento2 Extension', function() {
     callbacks.customer(testCustomer);
     clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
-      ['setCustomerId', 1],
+      ['setEmail', 'doge@emarsys.com'],
       ['searchTerm', 'shopify if better than magento'],
       [
         'cart',
@@ -268,7 +268,7 @@ describe('Magento2 Extension', function() {
     callbacks.cart(testCart2);
     clock.tick(0);
     expect(global.window.ScarabQueue).to.eql([
-      ['setCustomerId', 1],
+      ['setEmail', 'doge@emarsys.com'],
       ['searchTerm', 'shopify if better than magento'],
       [
         'cart',
@@ -281,7 +281,7 @@ describe('Magento2 Extension', function() {
         ]
       ],
       ['go'],
-      ['setCustomerId', 1],
+      ['setEmail', 'doge@emarsys.com'],
       [
         'cart',
         [
