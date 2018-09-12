@@ -300,4 +300,24 @@ describe('Magento2 Extension', function() {
       ['go']
     ]);
   });
+
+  it('should convert cart items price to base currency with exchangeRate', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.track({ exchangeRate: 2 });
+    callbacks.cart(testCart);
+    clock.tick(0);
+    expect(global.window.ScarabQueue).to.eql([
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 617,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go']
+    ]);
+  });
 });

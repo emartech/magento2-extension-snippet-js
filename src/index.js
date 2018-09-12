@@ -4,6 +4,7 @@ window.Emarsys = window.Emarsys || {};
 window.Emarsys.Magento2 = window.Emarsys.Magento2 || {};
 window.Emarsys.Magento2.track = function(data) {
   data.order = window.Emarsys.Magento2.orderData;
+  data.exchangeRate = data.exchangeRate || 1;
   window.require(['Magento_Customer/js/customer-data'], function(customerData) {
     let ScarabQueue = window.ScarabQueue || [];
     let firstOnData = true;
@@ -38,7 +39,7 @@ window.Emarsys.Magento2.track = function(data) {
           data.cart.items.map(product => {
             return {
               item: product.product_sku,
-              price: product.product_price_value,
+              price: product.product_price_value / data.exchangeRate,
               quantity: product.qty
             };
           })
