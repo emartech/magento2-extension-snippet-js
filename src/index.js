@@ -32,6 +32,11 @@ window.Emarsys.Magento2.track = function(data) {
         if (data.order) {
           ScarabQueue.push(['purchase', data.order]);
         }
+        if (data.slug) {
+          ScarabQueue.push(['availabilityZone', data.slug]);
+          ScarabQueue.push(['displayCurrency', data.slug]);
+          ScarabQueue.push(['language', data.slug]);
+        }
       }
       if (data.cart) {
         ScarabQueue.push([

@@ -320,4 +320,14 @@ describe('Magento2 Extension', function() {
       ['go']
     ]);
   });
+
+  it('should push availabilityZone, displayCurrency and language with slug if slug is present', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.track({ slug: 'testslug' });
+    callbacks.cart(testCart);
+    clock.tick(0);
+    expect(global.window.ScarabQueue).to.deep.include(['availabilityZone', 'testslug']);
+    expect(global.window.ScarabQueue).to.deep.include(['displayCurrency', 'testslug']);
+    expect(global.window.ScarabQueue).to.deep.include(['language', 'testslug']);
+  });
 });
