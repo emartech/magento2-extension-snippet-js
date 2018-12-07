@@ -1,6 +1,10 @@
 'use strict';
 
 module.exports = {
+  entry: {
+    'emarsys-m1': './src/magento1.js',
+    'emarsys-m2': './src/magento2.js'
+  },
   module: {
     rules: [
       {

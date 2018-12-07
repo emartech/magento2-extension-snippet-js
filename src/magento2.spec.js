@@ -27,7 +27,7 @@ const setupSnippet = function() {
     },
     ScarabQueue: []
   };
-  requireUncached('./');
+  requireUncached('./magento2');
   return callbacks;
 };
 
