@@ -19,6 +19,10 @@ window.Emarsys.Magento1.track = function(data) {
     ScarabQueue.push(['searchTerm', data.search.term]);
   }
   if (data.order) {
+    if (data.order.email) {
+      ScarabQueue.push(['setEmail', data.order.email]);
+      delete data.order.email;
+    }
     ScarabQueue.push(['purchase', data.order]);
   }
   if (data.slug) {

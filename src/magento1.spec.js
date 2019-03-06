@@ -87,6 +87,29 @@ describe('Magento1 Extension', function() {
     ]);
   });
 
+  it('should push setEmail with purchase event data if order object is present with email', function() {
+    global.window.Emarsys.Magento1.track({
+      order: {
+        orderId: '1',
+        email: 'test@email.com',
+        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+      }
+    });
+
+    expect(global.window.ScarabQueue).to.deep.include(['setEmail', 'test@email.com']);
+    expect(global.window.ScarabQueue).to.deep.include([
+      'purchase',
+      {
+        orderId: '1',
+        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+      }
+    ]);
+
+    const setEmailPosition = global.window.ScarabQueue.findIndex(e => e[0] === 'setEmail');
+    const purchasePosition = global.window.ScarabQueue.findIndex(e => e[0] === 'purchase');
+    expect(purchasePosition).to.be.above(setEmailPosition);
+  });
+
   it('should push searchTerm event if search.term is present', function() {
     global.window.Emarsys.Magento1.track({ search: { term: 'shopify if better than magento' } });
     expect(global.window.ScarabQueue).to.deep.include(['searchTerm', 'shopify if better than magento']);
