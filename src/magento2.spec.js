@@ -96,7 +96,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           }
         ]
@@ -118,7 +118,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           }
         ]
@@ -140,7 +140,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           }
         ]
@@ -162,7 +162,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           }
         ]
@@ -260,7 +260,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           }
         ]
@@ -283,7 +283,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           }
         ]
@@ -301,7 +301,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           }
         ]
@@ -313,12 +313,12 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 1234,
+            price: 51828,
             quantity: 42
           },
           {
             item: 'TEST2-SKU',
-            price: 1235,
+            price: 53105,
             quantity: 43
           }
         ]
@@ -338,7 +338,7 @@ describe('Magento2 Extension', function() {
         [
           {
             item: 'TEST-SKU',
-            price: 617,
+            price: 25914,
             quantity: 42
           }
         ]

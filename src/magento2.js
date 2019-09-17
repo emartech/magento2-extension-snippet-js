@@ -48,7 +48,7 @@ window.Emarsys.Magento2.track = function(data) {
           data.cart.items.map(product => {
             return {
               item: product.product_sku,
-              price: product.product_price_value / data.exchangeRate,
+              price: (product.product_price_value / data.exchangeRate) * product.qty,
               quantity: product.qty
             };
           })
