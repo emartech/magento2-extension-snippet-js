@@ -130,6 +130,45 @@ describe('Magento2 Extension', function() {
   it('should push customer and cart related data into scarabqueue if both triggered', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
+
+    const testCartWithBundle = {
+      items: [
+        {
+          product_sku: 'TEST-SKU',
+          product_price_value: 1234,
+          qty: 42
+        },
+        {
+          product_sku: 'BUNDLE-SKU-NORMAL-SKU',
+          product_price_value: 999,
+          qty: 50,
+          product_type: 'bundle'
+        }
+      ]
+    };
+
+    callbacks.customer(testCustomer);
+    callbacks.cart(testCartWithBundle);
+    clock.tick(0);
+    expect(global.window.ScarabQueue).to.eql([
+      ['setEmail', 'doge@emarsys.com'],
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 51828,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go']
+    ]);
+  });
+
+  it('should filter bundles in cart', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
     callbacks.cart(testCart);
     clock.tick(0);

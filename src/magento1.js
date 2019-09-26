@@ -33,13 +33,15 @@ window.Emarsys.Magento1.track = function(data) {
   if (data.cart) {
     ScarabQueue.push([
       'cart',
-      data.cart.items.map(product => {
-        return {
-          item: product.product_sku,
-          price: (product.product_price_value / data.exchangeRate) * product.qty,
-          quantity: product.qty
-        };
-      })
+      data.cart.items
+        .filter(product => product.product_type !== 'bundle')
+        .map(product => {
+          return {
+            item: product.product_sku,
+            price: (product.product_price_value / data.exchangeRate) * product.qty,
+            quantity: product.qty
+          };
+        })
     ]);
   }
 

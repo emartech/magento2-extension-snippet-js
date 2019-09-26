@@ -60,6 +60,50 @@ describe('Magento1 Extension', function() {
     ]);
   });
 
+  it('should filter out bundles in cart', function() {
+    const testCartWithBundle = {
+      items: [
+        {
+          product_sku: 'TEST-SKU',
+          product_price_value: 1234,
+          qty: 42
+        },
+        {
+          product_sku: 'TEST2-SKU',
+          product_price_value: 1235,
+          qty: 43,
+          product_type: 'bundle'
+        },
+        {
+          product_sku: 'TEST-SKU-3',
+          product_price_value: 1234,
+          qty: 42,
+          product_type: 'simple'
+        }
+      ]
+    };
+
+    global.window.Emarsys.Magento1.track({ cart: testCartWithBundle });
+    expect(global.window.ScarabQueue).to.eql([
+      [
+        'cart',
+        [
+          {
+            item: 'TEST-SKU',
+            price: 51828,
+            quantity: 42
+          },
+          {
+            item: 'TEST-SKU-3',
+            price: 51828,
+            quantity: 42
+          }
+        ]
+      ],
+      ['go']
+    ]);
+  });
+
   it('should push view event with SKU if product present', function() {
     global.window.Emarsys.Magento1.track({ product: { sku: 'VIEW-SKU' }, customer: testCustomer, cart: testCart });
     expect(global.window.ScarabQueue).to.deep.include(['view', 'g/VIEW-SKU']);
