@@ -6,11 +6,12 @@ window.Emarsys.Magento2.track = function(data) {
   data.order = window.Emarsys.Magento2.orderData;
   data.exchangeRate = data.exchangeRate || 1;
   window.require(['Magento_Customer/js/customer-data'], function(customerData) {
-    let ScarabQueue = window.ScarabQueue || [];
     let firstOnData = true;
     let timeout;
 
     const onData = function() {
+      let ScarabQueue = window.ScarabQueue || [];
+
       if (timeout) {
         clearTimeout(timeout);
         timeout = undefined;
