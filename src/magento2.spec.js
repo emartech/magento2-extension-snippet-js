@@ -210,13 +210,32 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should push view event with SKU if product present', function() {
+
+  it('should push view event with SKU prefixed with g/ if product present without isVisibleChild flag', function() {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ product: { sku: 'VIEW-SKU' } });
     callbacks.cart(testCart);
     callbacks.customer(testCustomer);
     clock.tick(0);
     expect(global.window.ScarabQueue).to.deep.include(['view', 'g/VIEW-SKU']);
+  });
+
+  it('should push view event with SKU prefixed with g/ if product present with isVisibleChild false', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.track({ product: { sku: 'VIEW-SKU', isVisibleChild: false } });
+    callbacks.cart(testCart);
+    callbacks.customer(testCustomer);
+    clock.tick(0);
+    expect(global.window.ScarabQueue).to.deep.include(['view', 'g/VIEW-SKU']);
+  });
+
+  it('should push view event with SKU without g/ prefix if product present with isVisibleChild true', function() {
+    const callbacks = setupSnippet();
+    global.window.Emarsys.Magento2.track({ product: { sku: 'VIEW-SKU', isVisibleChild: true } });
+    callbacks.cart(testCart);
+    callbacks.customer(testCustomer);
+    clock.tick(0);
+    expect(global.window.ScarabQueue).to.deep.include(['view', 'VIEW-SKU']);
   });
 
   it('should push category event joined as string if category names present', function() {

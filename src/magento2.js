@@ -22,7 +22,8 @@ window.Emarsys.Magento2.track = function(data) {
       }
       if (firstOnData) {
         if (data.product) {
-          ScarabQueue.push(['view', 'g/' + data.product.sku]);
+          const prefix = data.product.isVisibleChild ? '' : 'g/';
+          ScarabQueue.push(['view', prefix + data.product.sku]);
         }
         if (!data.product && data.category) {
           ScarabQueue.push(['category', data.category.names.join(' > ')]);
