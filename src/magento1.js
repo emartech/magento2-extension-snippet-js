@@ -23,6 +23,11 @@ window.Emarsys.Magento1.track = function(data) {
       ScarabQueue.push(['setEmail', data.order.email]);
       delete data.order.email;
     }
+
+    data.order.items.forEach(item => {
+      item.price = item.price * item.quantity;
+    });
+
     ScarabQueue.push(['purchase', data.order]);
   }
   if (data.slug) {

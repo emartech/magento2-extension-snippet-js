@@ -126,7 +126,7 @@ describe('Magento1 Extension', function() {
       'purchase',
       {
         orderId: '1',
-        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 400, quantity: 2 }]
       }
     ]);
   });
@@ -145,7 +145,7 @@ describe('Magento1 Extension', function() {
       'purchase',
       {
         orderId: '1',
-        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 400, quantity: 2 }]
       }
     ]);
 
