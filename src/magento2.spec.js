@@ -6,22 +6,32 @@ const sinonChai = require('sinon-chai');
 const expect = chai.expect;
 chai.use(sinonChai);
 
-const requireUncached = module => {
+const requireUncached = (module) => {
   delete require.cache[require.resolve(module)];
   return require(module);
 };
 
-const setupSnippet = function() {
+const reloadSpy = sinon.spy();
+const setupSnippet = function ({ dataId } = {}) {
   let callbacks = {};
+
+  const getObjectOrFunction = function () {
+    return {
+      data_id: dataId
+    };
+  };
+
   global.window = {
-    require: function(arr, requireCallback) {
+    require: function (arr, requireCallback) {
       requireCallback({
-        get: function(name) {
-          return {
-            subscribe: function(callback) {
-              callbacks[name] = callback;
-            }
+        get: function (name) {
+          getObjectOrFunction.subscribe = function (callback) {
+            callbacks[name] = callback;
           };
+          return getObjectOrFunction;
+        },
+        reload: function () {
+          reloadSpy(...arguments);
         }
       });
     },
@@ -58,18 +68,20 @@ const testCart2 = {
 
 const testCustomer = { id: 1, email: 'doge@emarsys.com', name: 'Marton Papp' };
 
-describe('Magento2 Extension', function() {
+describe('Magento2 Extension', function () {
   let clock;
 
-  beforeEach(function() {
+  beforeEach(function () {
+    global.FORCE_CUSTOMER_RELOAD = false;
     clock = sinon.useFakeTimers();
+    reloadSpy.resetHistory();
   });
 
-  afterEach(function() {
+  afterEach(function () {
     clock.restore();
   });
 
-  it('should register a track function', function() {
+  it('should register a track function', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ a: 'b' });
     callbacks.customer(testCustomer);
@@ -77,7 +89,7 @@ describe('Magento2 Extension', function() {
     expect(global.window.Emarsys.Magento2.track).to.be.a('function');
   });
 
-  it('should insert data into scarabqueue if only customer observable triggered', function() {
+  it('should insert data into scarabqueue if only customer observable triggered', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
@@ -85,7 +97,7 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.eql([['setEmail', 'doge@emarsys.com'], ['go']]);
   });
 
-  it('should insert data into scarabqueue if only cart observable triggered', function() {
+  it('should insert data into scarabqueue if only cart observable triggered', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
@@ -106,7 +118,7 @@ describe('Magento2 Extension', function() {
   });
 
   // eslint-disable-next-line max-len
-  it('should insert only cart data into scarabqueue if cart and customer is triggered but without a customer id', function() {
+  it('should insert only cart data into scarabqueue if cart and customer is triggered but without a customer id', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
@@ -127,7 +139,7 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should push customer and cart related data into scarabqueue if both triggered', function() {
+  it('should push customer and cart related data into scarabqueue if both triggered', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
 
@@ -166,7 +178,7 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should filter bundles in cart', function() {
+  it('should filter bundles in cart', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.customer(testCustomer);
@@ -188,7 +200,7 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should push customer and cart related data into scarabqueue after both triggered (different order)', function() {
+  it('should push customer and cart related data into scarabqueue after both triggered (different order)', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({});
     callbacks.cart(testCart);
@@ -210,8 +222,7 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-
-  it('should push view event with SKU prefixed with g/ if product present without isVisibleChild flag', function() {
+  it('should push view event with SKU prefixed with g/ if product present without isVisibleChild flag', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ product: { sku: 'VIEW-SKU' } });
     callbacks.cart(testCart);
@@ -220,7 +231,7 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.deep.include(['view', 'g/VIEW-SKU']);
   });
 
-  it('should push view event with SKU prefixed with g/ if product present with isVisibleChild false', function() {
+  it('should push view event with SKU prefixed with g/ if product present with isVisibleChild false', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ product: { sku: 'VIEW-SKU', isVisibleChild: false } });
     callbacks.cart(testCart);
@@ -229,7 +240,7 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.deep.include(['view', 'g/VIEW-SKU']);
   });
 
-  it('should push view event with SKU without g/ prefix if product present with isVisibleChild true', function() {
+  it('should push view event with SKU without g/ prefix if product present with isVisibleChild true', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ product: { sku: 'VIEW-SKU', isVisibleChild: true } });
     callbacks.cart(testCart);
@@ -238,7 +249,7 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.deep.include(['view', 'VIEW-SKU']);
   });
 
-  it('should push category event joined as string if category names present', function() {
+  it('should push category event joined as string if category names present', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ category: { names: ['elso', 'masodik'] } });
     callbacks.cart(testCart);
@@ -247,11 +258,14 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.deep.include(['category', 'elso > masodik']);
   });
 
-  it('should push purchase event data if order object is present', function() {
+  it('should push purchase event data if order object is present', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.orderData = {
       orderId: '1',
-      items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+      items: [
+        { item: 'SKU-1', price: 100, quantity: 1 },
+        { item: 'SKU-2', price: 200, quantity: 2 }
+      ]
     };
 
     global.window.Emarsys.Magento2.track({});
@@ -262,17 +276,23 @@ describe('Magento2 Extension', function() {
       'purchase',
       {
         orderId: '1',
-        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+        items: [
+          { item: 'SKU-1', price: 100, quantity: 1 },
+          { item: 'SKU-2', price: 200, quantity: 2 }
+        ]
       }
     ]);
   });
 
-  it('should push setEmail with purchase event data if order object is present with email', function() {
+  it('should push setEmail with purchase event data if order object is present with email', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.orderData = {
       orderId: '1',
       email: 'test@email.com',
-      items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+      items: [
+        { item: 'SKU-1', price: 100, quantity: 1 },
+        { item: 'SKU-2', price: 200, quantity: 2 }
+      ]
     };
 
     global.window.Emarsys.Magento2.track({});
@@ -284,16 +304,19 @@ describe('Magento2 Extension', function() {
       'purchase',
       {
         orderId: '1',
-        items: [{ item: 'SKU-1', price: 100, quantity: 1 }, { item: 'SKU-2', price: 200, quantity: 2 }]
+        items: [
+          { item: 'SKU-1', price: 100, quantity: 1 },
+          { item: 'SKU-2', price: 200, quantity: 2 }
+        ]
       }
     ]);
 
-    const setEmailPosition = global.window.ScarabQueue.findIndex(e => e[0] === 'setEmail');
-    const purchasePosition = global.window.ScarabQueue.findIndex(e => e[0] === 'purchase');
+    const setEmailPosition = global.window.ScarabQueue.findIndex((e) => e[0] === 'setEmail');
+    const purchasePosition = global.window.ScarabQueue.findIndex((e) => e[0] === 'purchase');
     expect(purchasePosition).to.be.above(setEmailPosition);
   });
 
-  it('should push searchTerm event if search.term is present', function() {
+  it('should push searchTerm event if search.term is present', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ search: { term: 'shopify if better than magento' } });
     callbacks.cart(testCart);
@@ -302,7 +325,7 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.deep.include(['searchTerm', 'shopify if better than magento']);
   });
 
-  it('should only push cart and customer data from the second call', function() {
+  it('should only push cart and customer data from the second call', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ search: { term: 'shopify if better than magento' } });
     callbacks.cart(testCart);
@@ -327,7 +350,7 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should push data call go again if cart triggered second time', function() {
+  it('should push data call go again if cart triggered second time', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ search: { term: 'shopify if better than magento' } });
     callbacks.cart(testCart);
@@ -385,7 +408,7 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should convert cart items price to base currency with exchangeRate', function() {
+  it('should convert cart items price to base currency with exchangeRate', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ exchangeRate: 2 });
     callbacks.cart(testCart);
@@ -405,7 +428,7 @@ describe('Magento2 Extension', function() {
     ]);
   });
 
-  it('should push availabilityZone, displayCurrency and language with slug if slug is present', function() {
+  it('should push availabilityZone, displayCurrency and language with slug if slug is present', function () {
     const callbacks = setupSnippet();
     global.window.Emarsys.Magento2.track({ slug: 'testslug' });
     callbacks.cart(testCart);
@@ -413,5 +436,38 @@ describe('Magento2 Extension', function() {
     expect(global.window.ScarabQueue).to.deep.include(['availabilityZone', 'testslug']);
     expect(global.window.ScarabQueue).to.deep.include(['displayCurrency', 'testslug']);
     expect(global.window.ScarabQueue).to.deep.include(['language', 'testslug']);
+  });
+
+  context('after version 2.3.3', function () {
+    beforeEach(function () {
+      global.FORCE_CUSTOMER_RELOAD = true;
+    });
+
+    it('should insert data into scarabqueue if only customer observable triggered but only once', function () {
+      const callbacks = setupSnippet();
+      global.window.Emarsys.Magento2.track({});
+
+      callbacks.customer(testCustomer);
+      clock.tick(0);
+
+      callbacks.customer(testCustomer);
+      clock.tick(0);
+
+      expect(global.window.ScarabQueue).to.eql([['setEmail', 'doge@emarsys.com'], ['go']]);
+    });
+
+    it('should call reload if current customers data_id is undefined', function () {
+      setupSnippet({ dataId: undefined });
+      global.window.Emarsys.Magento2.track({});
+
+      expect(reloadSpy).to.have.been.calledWith(['customer'], true);
+    });
+
+    it('should NOT call reload if current customers data_id is set', function () {
+      setupSnippet({ dataId: 1234 });
+      global.window.Emarsys.Magento2.track({});
+
+      expect(reloadSpy).not.to.have.been.called;
+    });
   });
 });

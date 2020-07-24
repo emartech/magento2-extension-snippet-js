@@ -2,14 +2,15 @@
 
 window.Emarsys = window.Emarsys || {};
 window.Emarsys.Magento2 = window.Emarsys.Magento2 || {};
-window.Emarsys.Magento2.track = function(data) {
+window.Emarsys.Magento2.track = function (data) {
   data.order = window.Emarsys.Magento2.orderData;
   data.exchangeRate = data.exchangeRate || 1;
-  window.require(['Magento_Customer/js/customer-data'], function(customerData) {
+  window.require(['Magento_Customer/js/customer-data'], function (customerData) {
     let firstOnData = true;
+    let customerFired = false;
     let timeout;
 
-    const onData = function() {
+    const onData = function () {
       let ScarabQueue = window.ScarabQueue || [];
 
       if (timeout) {
@@ -48,8 +49,8 @@ window.Emarsys.Magento2.track = function(data) {
         ScarabQueue.push([
           'cart',
           data.cart.items
-            .filter(product => product.product_type !== 'bundle')
-            .map(product => {
+            .filter((product) => product.product_type !== 'bundle')
+            .map((product) => {
               return {
                 item: product.product_sku,
                 price: (product.product_price_value / data.exchangeRate) * product.qty,
@@ -62,12 +63,22 @@ window.Emarsys.Magento2.track = function(data) {
       firstOnData = false;
     };
 
-    customerData.get('customer').subscribe(function(customer) {
+    customerData.get('customer').subscribe(function (customer) {
+      if (FORCE_CUSTOMER_RELOAD) {
+        if (customerFired) return;
+        customerFired = true;
+      }
       data.customer = customer;
       if (!timeout) timeout = setTimeout(onData, 0);
     });
 
-    customerData.get('cart').subscribe(function(cart) {
+    if (FORCE_CUSTOMER_RELOAD) {
+      if (!customerData.get('customer')().data_id) {
+        customerData.reload(['customer'], true);
+      }
+    }
+
+    customerData.get('cart').subscribe(function (cart) {
       data.cart = cart;
       if (!timeout) timeout = setTimeout(onData, 0);
     });

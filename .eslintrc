@@ -19,7 +19,8 @@
     "onmessage": true,
     "expect": true,
     "Emarsys": true,
-    "window": true
+    "window": true,
+    "FORCE_CUSTOMER_RELOAD": true
   },
   "rules": {
     "no-unused-expressions": 0,
@@ -28,6 +29,7 @@
     "require-yield": 0,
     "new-cap": 0,
     "security/detect-object-injection": 0,
-    "security/detect-non-literal-require": 0
+    "security/detect-non-literal-require": 0,
+    "space-before-function-paren": 0
   }
 }
