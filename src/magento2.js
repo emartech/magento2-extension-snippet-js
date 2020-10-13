@@ -18,9 +18,18 @@ window.Emarsys.Magento2.track = function (data) {
         timeout = undefined;
       }
 
-      if (data.customer && data.customer.email) {
-        ScarabQueue.push(['setEmail', data.customer.email]);
+      if (CONTACT_IDENTIFIER === 'email') {
+        if (data.customer && data.customer.email) {
+          ScarabQueue.push(['setEmail', data.customer.email]);
+        }
       }
+
+      if (CONTACT_IDENTIFIER === 'id') {
+        if (data.customer && data.customer.id) {
+          ScarabQueue.push(['setCustomerId', data.customer.id]);
+        }
+      }
+
       if (firstOnData) {
         if (data.product) {
           const prefix = data.product.isVisibleChild ? '' : 'g/';
@@ -33,10 +42,12 @@ window.Emarsys.Magento2.track = function (data) {
           ScarabQueue.push(['searchTerm', data.search.term]);
         }
         if (data.order) {
-          if (data.order.email) {
-            ScarabQueue.push(['setEmail', data.order.email]);
-            delete data.order.email;
+          if (CONTACT_IDENTIFIER === 'email') {
+            if (data.order.email) {
+              ScarabQueue.push(['setEmail', data.order.email]);
+            }
           }
+          delete data.order.email;
           ScarabQueue.push(['purchase', data.order]);
         }
         if (data.slug) {
