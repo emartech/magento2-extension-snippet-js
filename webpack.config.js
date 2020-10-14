@@ -10,7 +10,7 @@ const buildsForMagento2 = {
   'emarsys-m2-email-before-233': { contactIdentifier: 'email', forceCustomerReload: false },
   'emarsys-m2-email-after-233': { contactIdentifier: 'email', forceCustomerReload: true },
   'emarsys-m2-id-before-233': { contactIdentifier: 'id', forceCustomerReload: false },
-  'emarsys-m2-id-after-233': { contactIdentifier: 'id', forceCustomerReload: true },
+  'emarsys-m2-id-after-233': { contactIdentifier: 'id', forceCustomerReload: true }
 };
 
 const defaultModule = {
@@ -27,14 +27,14 @@ const defaultModule = {
     }
   ]
 };
-  
+
 module.exports = [
   {
     entry: { 'emarsys-m1': './src/magento1.js' },
     module: defaultModule
   },
 
-  ...Object.keys(buildsForMagento2).map(key => {
+  ...Object.keys(buildsForMagento2).map((key) => {
     return {
       entry: { [key]: './src/magento2.js' },
       plugins: [
@@ -44,6 +44,6 @@ module.exports = [
         })
       ],
       module: defaultModule
-    }
+    };
   })
 ];

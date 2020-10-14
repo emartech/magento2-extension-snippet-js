@@ -182,6 +182,7 @@ describe('Magento2 Extension', function () {
         ]);
       });
 
+      // eslint-disable-next-line max-len
       it('should push customer and cart related data into scarabqueue after both triggered (different order)', function () {
         const callbacks = setupSnippet();
         global.window.Emarsys.Magento2.track({});

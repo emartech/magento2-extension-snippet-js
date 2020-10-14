@@ -20,7 +20,8 @@
     "expect": true,
     "Emarsys": true,
     "window": true,
-    "FORCE_CUSTOMER_RELOAD": true
+    "FORCE_CUSTOMER_RELOAD": true,
+    "CONTACT_IDENTIFIER": true
   },
   "rules": {
     "no-unused-expressions": 0,
