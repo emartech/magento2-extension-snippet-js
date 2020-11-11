@@ -274,12 +274,12 @@ describe('Magento2 Extension', function () {
             [
               {
                 item: 'TEST-SKU',
-                price: '420.420',
+                price: 420.42,
                 quantity: 42
               },
               {
                 item: 'TEST2-SKU',
-                price: '430.430',
+                price: 430.43,
                 quantity: 43
               }
             ]

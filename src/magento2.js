@@ -65,7 +65,7 @@ window.Emarsys.Magento2.track = function (data) {
               let price;
 
               if (product.product_price_value.incl_tax) {
-                price = ((parseFloat(product.product_price_value.incl_tax) / data.exchangeRate) * product.qty).toFixed(3);
+                price = (parseFloat(product.product_price_value.incl_tax) / data.exchangeRate) * product.qty;
               } else {
                 price = (product.product_price_value / data.exchangeRate) * product.qty;
               }
