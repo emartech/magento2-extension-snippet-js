@@ -62,9 +62,17 @@ window.Emarsys.Magento2.track = function (data) {
           data.cart.items
             .filter((product) => product.product_type !== 'bundle')
             .map((product) => {
+              let price;
+
+              if (product.product_price_value.incl_tax) {
+                price = ((parseFloat(product.product_price_value.incl_tax) / data.exchangeRate) * product.qty).toFixed(3);
+              } else {
+                price = (product.product_price_value / data.exchangeRate) * product.qty;
+              }
+
               return {
                 item: product.product_sku,
-                price: (product.product_price_value / data.exchangeRate) * product.qty,
+                price,
                 quantity: product.qty
               };
             })

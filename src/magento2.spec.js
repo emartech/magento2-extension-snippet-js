@@ -55,12 +55,12 @@ const testCart2 = {
   items: [
     {
       product_sku: 'TEST-SKU',
-      product_price_value: 1234,
+      product_price_value: { incl_tax: '10.01', excl_tax: 456 },
       qty: 42
     },
     {
       product_sku: 'TEST2-SKU',
-      product_price_value: 1235,
+      product_price_value: { incl_tax: '10.01', excl_tax: 456 },
       qty: 43
     }
   ]
@@ -274,12 +274,12 @@ describe('Magento2 Extension', function () {
             [
               {
                 item: 'TEST-SKU',
-                price: 51828,
+                price: '420.420',
                 quantity: 42
               },
               {
                 item: 'TEST2-SKU',
-                price: 53105,
+                price: '430.430',
                 quantity: 43
               }
             ]
