@@ -12,7 +12,8 @@ const requireUncached = (module) => {
 };
 
 const reloadSpy = sinon.spy();
-const setupSnippet = function ({ dataId } = {}) {
+const initSpy = sinon.spy();
+const setupSnippet = function ({ dataId } = {}, initStorage) {
   let callbacks = {};
 
   const getObjectOrFunction = function () {
@@ -32,7 +33,8 @@ const setupSnippet = function ({ dataId } = {}) {
         },
         reload: function () {
           reloadSpy(...arguments);
-        }
+        },
+        initStorage
       });
     },
     ScarabQueue: []
@@ -76,6 +78,7 @@ describe('Magento2 Extension', function () {
     global.FORCE_CUSTOMER_RELOAD = false;
     clock = sinon.useFakeTimers();
     reloadSpy.resetHistory();
+    initSpy.resetHistory();
   });
 
   afterEach(function () {
@@ -519,17 +522,24 @@ describe('Magento2 Extension', function () {
       });
     });
 
-    it('should call reload if current customers data_id is undefined', function () {
-      setupSnippet({ dataId: undefined });
+    it('should relad the customer and init the storage if current customers data_id is undefined', function () {
+      setupSnippet({ dataId: undefined }, initSpy);
       global.window.Emarsys.Magento2.track({});
 
+      expect(initSpy).to.have.been.called;
       expect(reloadSpy).to.have.been.calledWith(['customer'], true);
     });
 
+    it('should not try init the storage if the method is undefined', function () {
+      setupSnippet({ dataId: undefined });
+      global.window.Emarsys.Magento2.track({});
+    });
+
     it('should NOT call reload if current customers data_id is set', function () {
-      setupSnippet({ dataId: 1234 });
+      setupSnippet({ dataId: 1234 }, initSpy);
       global.window.Emarsys.Magento2.track({});
 
+      expect(initSpy).not.to.have.been.called;
       expect(reloadSpy).not.to.have.been.called;
     });
   });

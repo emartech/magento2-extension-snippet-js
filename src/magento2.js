@@ -93,6 +93,9 @@ window.Emarsys.Magento2.track = function (data) {
 
     if (FORCE_CUSTOMER_RELOAD) {
       if (!customerData.get('customer')().data_id) {
+        if (typeof customerData.initStorage === 'function') {
+          customerData.initStorage();
+        }
         customerData.reload(['customer'], true);
       }
     }
