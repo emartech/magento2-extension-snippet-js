@@ -21,9 +21,9 @@
   "devDependencies": {
     "@babel/core": "7.6.0",
     "@babel/preset-env": "7.6.0",
-    "@emartech/client-publish": "2.2.0",
-    "babel-loader": "8.0.6",
-    "chai": "4.2.0",
+    "@emartech/client-publish": "3.0.0",
+    "babel-loader": "8.2.2",
+    "chai": "4.3.4",
     "chai-as-promised": "7.1.1",
     "chai-string": "1.5.0",
     "chai-subset": "1.6.0",
@@ -33,7 +33,7 @@
     "mocha": "6.2.0",
     "nock": "11.3.4",
     "sinon": "7.4.2",
-    "sinon-chai": "3.3.0",
+    "sinon-chai": "3.7.0",
     "webpack": "4.40.2",
     "webpack-cli": "3.3.9"
   },
